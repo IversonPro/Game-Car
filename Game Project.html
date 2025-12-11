@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Jeu - Classement de l'univers</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f2f5;
+      padding: 20px;
+      text-align: center;
+    }
+    h1 {
+      color: #333;
+    }
+    .container {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 20px;
+    }
+    .item {
+      padding: 10px 15px;
+      margin: 10px;
+      background-color: #fff;
+      border: 2px solid #ccc;
+      border-radius: 8px;
+      cursor: grab;
+    }
+    .dropzone {
+      width: 100%;
+      min-height: 100px;
+      border: 2px dashed #aaa;
+      border-radius: 10px;
+      padding: 10px;
+      margin-top: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #4caf50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+.result {
+      margin-top: 20px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Classe les éléments du plus petit au plus grand</h1>
+<p>Fais glisser les éléments ci-dessous dans la zone pour les trier correctement.</p>
+
+<div class="container" id="items">
+  <div class="item" draggable="true" data-size="1">Quark</div>
+  <div class="item" draggable="true" data-size="2">Atome</div>
+  <div class="item" draggable="true" data-size="3">Molécule</div>
+  <div class="item" draggable="true" data-size="4">Cellule</div>
+  <div class="item" draggable="true" data-size="5">Humain</div>
+  <div class="item" draggable="true" data-size="6">Terre</div>
+  <div class="item" draggable="true" data-size="7">Soleil</div>
+  <div class="item" draggable="true" data-size="8">Galaxie</div>
+  <div class="item" draggable="true" data-size="9">Univers observable</div>
+</div>
+
+<h2>Zone de classement</h2>
+<div class="dropzone" id="dropzone"></div>
+
+<button class="button" onclick="checkOrder()">Vérifier</button>
+
+<div class="result" id="result"></div>
+
+<script>
+  const items = document.querySelectorAll('.item');
+  const dropzone = document.getElementById('dropzone');
+
+  items.forEach(item => {
+    item.addEventListener('dragstart', e => {
+      e.dataTransfer.setData('text/plain', item.outerHTML);
+item.classList.add('dragging');
+    });
+  });
+
+  dropzone.addEventListener('dragover', e => {
+    e.preventDefault();
+  });
+
+  dropzone.addEventListener('drop', e => {
+    e.preventDefault();
+    const data = e.dataTransfer.getData('text/plain');
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(data, 'text/html');
+    const newItem = doc.body.firstChild;
+    newItem.draggable = false;
+    newItem.classList.remove('dragging');
+    if (![...dropzone.children].some(child => child.textContent === newItem.textContent)) {
+      dropzone.appendChild(newItem);
+    }
+  });
+
+  function checkOrder() {
+    const children = [...dropzone.children];
+    if (children.length < 9) {
+      document.getElementById('result').textContent = 'Classement incomplet !';
+      return;
+    }
+    const correctOrder = children.every((child, index) => {
+      return parseInt(child.dataset.size) === index + 1;
+    });
+    document.getElementById('result').textContent = correctOrder
+      ? 'Bravo ! Tu as bien classé tous les éléments 🎉'
+      : 'Oups ! L’ordre est incorrect. Réessaie !';
+  }
+</script>
+
+</body>
+</html>
