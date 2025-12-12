@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Quiz - Échelle de l’univers</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background-color: #f2f2f2;
+      text-align: center;
+    }
+    .quiz-box {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 600px;
+      margin: auto;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .question {
+      font-size: 20px;
+      margin-bottom: 15px;
+    }
+    .choices button {
+      display: block;
+      width: 100%;
+      margin: 8px 0;
+      padding: 10px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .nav-buttons {
+      margin-top: 20px;
+    }
+    .nav-buttons button {
+      padding: 8px 15px;
+      font-size: 14px;
+      margin: 5px;
+    }
+    .result {
+      font-weight: bold;
+      margin-top: 15px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="quiz-box">
+  <div id="question-container">
+<div class="question" id="question"></div>
+    <div class="choices" id="choices"></div>
+    <div class="result" id="result"></div>
+  </div>
+  <div class="nav-buttons">
+    <button onclick="prevQuestion()">⬅️ Précédent</button>
+    <button onclick="nextQuestion()">Suivant ➡️</button>
+  </div>
+</div>
+
+<script>
+  const quiz = [
+    {
+      question: "Quelle est la taille moyenne d’un atome ?",
+      choices: ["0,1 nanomètre", "1 micromètre", "1 millimètre", "1 centimètre"],
+      answer: 0
+    },
+    {
+      question: "Quelle est la plus grande planète du système solaire ?",
+      choices: ["Saturne", "Terre", "Jupiter", "Neptune"],
+      answer: 2
+    },
+    {
+      question: "Quelle est la distance approximative de la Terre au Soleil ?",
+      choices: ["150 000 km", "1 million de km", "150 millions de km", "1 milliard de km"],
+      answer: 2
+    },
+    {
+      question: "Quelle est la plus petite particule listée ?",
+      choices: ["Atome", "Quark", "Molécule", "Cellule"],
+      answer: 1
+    },
+    {
+      question: "Quelle est la taille approximative de l’univers observable ?",
+      choices: ["100 000 années-lumière", "1 million d’années-lumière", "93 milliards d’années-lumière", "Infinie"],
+      answer: 2
+    }
+  ];
+
+  let currentQuestion = 0;
+  let userAnswers = [];
+function showQuestion(index) {
+    const q = quiz[index];
+    document.getElementById("question").textContent = q.question;
+    const choicesDiv = document.getElementById("choices");
+    const resultDiv = document.getElementById("result");
+    choicesDiv.innerHTML = "";
+    resultDiv.textContent = "";
+
+    q.choices.forEach((choice, i) => {
+      const btn = document.createElement("button");
+      btn.textContent = choice;
+      btn.onclick = () => {
+        userAnswers[index] = i;
+        resultDiv.textContent = i === q.answer ? "✅ Bonne réponse !" : "❌ Mauvaise réponse.";
+      };
+      choicesDiv.appendChild(btn);
+    });
+  }
+
+  function nextQuestion() {
+    if (currentQuestion < quiz.length - 1) {
+      currentQuestion++;
+      showQuestion(currentQuestion);
+    }
+  }
+
+  function prevQuestion() {
+    if (currentQuestion > 0) {
+      currentQuestion--;
+      showQuestion(currentQuestion);
+    }
+  }
+
+  // Démarrage
+  showQuestion(currentQuestion);
+</script>
+
+</body>
+</html>
