@@ -5,93 +5,166 @@
   <title>Quiz - Échelle de l’univers</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
+      font-family: 'Segoe UI', Arial, sans-serif;
       padding: 20px;
-      background-color: #f2f2f2;
+      background: radial-gradient(circle at top, #0f172a, #020617);
+      color: #e5e7eb;
       text-align: center;
     }
     .quiz-box {
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      max-width: 600px;
+      background: #020617;
+      padding: 25px;
+      border-radius: 16px;
+      max-width: 700px;
       margin: auto;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      box-shadow: 0 0 30px rgba(56,189,248,0.25);
+      border: 1px solid #0ea5e9;
+    }
+    h1 { margin-top: 0; color: #38bdf8; }
+    .question-img {
+      width: 100%;
+      max-height: 220px;
+      object-fit: contain;
+      margin: 10px 0;
+      border-radius: 10px;
+      background: #020617;
+    }
+    .progress {
+      height: 10px;
+      background: #020617;
+      border-radius: 6px;
+      overflow: hidden;
+      margin-bottom: 15px;
+      border: 1px solid #0ea5e9;
+    }
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #22d3ee, #38bdf8);
+      transition: width 0.4s ease;
     }
     .question {
       font-size: 20px;
-      margin-bottom: 15px;
+      margin-bottom: 10px;
     }
     .choices button {
       display: block;
       width: 100%;
-      margin: 8px 0;
-      padding: 10px;
+      margin: 10px 0;
+      padding: 14px;
       font-size: 16px;
       cursor: pointer;
+      border-radius: 12px;
+      border: 1px solid #1e293b;
+      background: #020617;
+      color: #e5e7eb;
+      transition: transform 0.15s ease, background 0.15s ease;
     }
+    .choices button:hover { transform: scale(1.02); background: #020617; }
+    .choices button.correct { background: #064e3b; border-color: #34d399; }
+    .choices button.wrong { background: #7f1d1d; border-color: #f87171; }
     .nav-buttons {
       margin-top: 20px;
     }
     .nav-buttons button {
-      padding: 8px 15px;
+      padding: 10px 18px;
       font-size: 14px;
-      margin: 5px;
+      margin: 6px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      background: #0ea5e9;
+      color: #020617;
     }
-    .result {
-      font-weight: bold;
-      margin-top: 15px;
+    .result { font-weight: bold; margin-top: 10px; }
+    .score { margin-top: 8px; font-size: 14px; color: #94a3b8; }
+    .final {
+      margin-top: 20px;
+      font-size: 18px;
+      color: #38bdf8;
     }
   </style>
 </head>
 <body>
 
 <div class="quiz-box">
+  <h1>🌌 Voyage dans l’Univers</h1>
+
+  <div id="timer" style="margin-bottom:10px;font-weight:bold;color:#22d3ee">⏱️ Temps : <span id="time">20</span>s</div>
+
+  <div class="progress"><div class="progress-bar" id="progressBar"></div></div>
+
   <div id="question-container">
-<div class="question" id="question"></div>
+    <div class="question" id="question"></div>
+    <img id="questionImg" class="question-img" alt="Illustration astronomique">
     <div class="choices" id="choices"></div>
     <div class="result" id="result"></div>
+    <div class="score" id="score"></div>
+    <div class="final" id="final"></div>
   </div>
+
   <div class="nav-buttons">
-    <button onclick="prevQuestion()">⬅️ Précédent</button>
-    <button onclick="nextQuestion()">Suivant ➡️</button>
+    <button onclick="prevQuestion()">⬅️</button>
+    <button onclick="nextQuestion()">➡️</button>
+    <button onclick="restartQuiz()">🔄</button>
   </div>
 </div>
 
 <script>
+  const timePerQuestion = 20;
+  let timer;
+
   const quiz = [
     {
       question: "Quelle est la taille moyenne d’un atome ?",
+      img: "https://upload.wikimedia.org/wikipedia/commons/8/8d/Atom_diagram.png",
       choices: ["0,1 nanomètre", "1 micromètre", "1 millimètre", "1 centimètre"],
       answer: 0
     },
     {
       question: "Quelle est la plus grande planète du système solaire ?",
+      img: "https://upload.wikimedia.org/wikipedia/commons/e/e2/Jupiter.jpg",
       choices: ["Saturne", "Terre", "Jupiter", "Neptune"],
       answer: 2
     },
     {
       question: "Quelle est la distance approximative de la Terre au Soleil ?",
+      img: "https://upload.wikimedia.org/wikipedia/commons/4/4c/Solar_sys8.jpg",
       choices: ["150 000 km", "1 million de km", "150 millions de km", "1 milliard de km"],
       answer: 2
     },
     {
       question: "Quelle est la plus petite particule listée ?",
+      img: "https://upload.wikimedia.org/wikipedia/commons/5/50/Standard_Model_of_Elementary_Particles.svg",
       choices: ["Atome", "Quark", "Molécule", "Cellule"],
       answer: 1
     },
     {
+      question: "Quelle galaxie abrite la Terre ?",
+      img: "https://upload.wikimedia.org/wikipedia/commons/6/6a/Milky_Way_Arch.jpg",
+      choices: ["Andromède", "Voie lactée", "Sombrero", "Cartwheel"],
+      answer: 1
+    },
+    {
       question: "Quelle est la taille approximative de l’univers observable ?",
+      img: "https://upload.wikimedia.org/wikipedia/commons/c/c3/Observable_universe_logarithmic_illustration.png",
       choices: ["100 000 années-lumière", "1 million d’années-lumière", "93 milliards d’années-lumière", "Infinie"],
       answer: 2
     }
   ];
 
   let currentQuestion = 0;
-  let userAnswers = [];
-function showQuestion(index) {
+  let userAnswers = Array(quiz.length).fill(null);
+
+  function showQuestion(index) {
+    clearInterval(timer);
+    let timeLeft = timePerQuestion;
+    document.getElementById("tim
     const q = quiz[index];
-    document.getElementById("question").textContent = q.question;
+    document.getElementById("question").textContent = `Question ${index + 1}/${quiz.length} – ${q.question}`;
+    document.getElementById("questionImg").src = q.img;
+    document.getElementById("final").textContent = "";
+
     const choicesDiv = document.getElementById("choices");
     const resultDiv = document.getElementById("result");
     choicesDiv.innerHTML = "";
@@ -100,31 +173,58 @@ function showQuestion(index) {
     q.choices.forEach((choice, i) => {
       const btn = document.createElement("button");
       btn.textContent = choice;
+
+      if (userAnswers[index] !== null) {
+        if (i === q.answer) btn.classList.add("correct");
+        if (i === userAnswers[index] && userAnswers[index] !== q.answer) btn.classList.add("wrong");
+      }
+
       btn.onclick = () => {
+        if (userAnswers[index] !== null) return;
         userAnswers[index] = i;
-        resultDiv.textContent = i === q.answer ? "✅ Bonne réponse !" : "❌ Mauvaise réponse.";
+        showQuestion(index);
+        resultDiv.textContent = i === q.answer ? "✨ Correct !" : "💥 Faux !";
+        updateScore();
+        if (userAnswers.every(a => a !== null)) showFinal();
       };
       choicesDiv.appendChild(btn);
     });
+
+    updateProgress();
+    updateScore();
   }
 
-  function nextQuestion() {
-    if (currentQuestion < quiz.length - 1) {
-      currentQuestion++;
-      showQuestion(currentQuestion);
-    }
+  function updateProgress() {
+    const answered = userAnswers.filter(a => a !== null).length;
+    document.getElementById("progressBar").style.width = (answered / quiz.length) * 100 + "%";
   }
 
-  function prevQuestion() {
-    if (currentQuestion > 0) {
-      currentQuestion--;
-      showQuestion(currentQuestion);
-    }
+  function updateScore() {
+    let score = 0;
+    userAnswers.forEach((a, i) => { if (a === quiz[i].answer) score++; });
+    document.getElementById("score").textContent = `Score : ${score} / ${quiz.length}`;
   }
 
-  // Démarrage
+  function showFinal() {
+    const score = userAnswers.filter((a, i) => a === quiz[i].answer).length;
+    let msg = "";
+    if (score === quiz.length) msg = "🌟 Maître de l’univers !";
+    else if (score >= quiz.length / 2) msg = "🚀 Bon explorateur spatial !";
+    else msg = "🛰️ Continue ton voyage cosmique !";
+    document.getElementById("final").textContent = msg;
+  }
+
+  function nextQuestion() { if (currentQuestion < quiz.length - 1) showQuestion(++currentQuestion); }
+  function prevQuestion() { if (currentQuestion > 0) showQuestion(--currentQuestion); }
+  function restartQuiz() {
+    currentQuestion = 0;
+    userAnswers = Array(quiz.length).fill(null);
+    showQuestion(currentQuestion);
+  }
+
   showQuestion(currentQuestion);
 </script>
 
 </body>
 </html>
+
